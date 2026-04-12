@@ -1,0 +1,72 @@
+/* =============================================
+   PRELOADER STYLES — SKELETON
+   Colors:
+     Background:  #050A30 (Dark Navy)
+     Accent:      #12229C (Royal Blue)
+     CTA/Glow:    #FBA559 (Amber)
+     Text:        #FFFFFF (White)
+   ============================================= */
+
+/* ── Fullscreen overlay ── */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* TODO: Add flex-direction, overflow, etc. as needed */
+}
+
+/* ── Counter (the 0→100 number) ── */
+.preloader-counter {
+  /* TODO: Style your counter text
+     - font-size, font-weight, color: #FFFFFF
+     - consider using clamp() for responsive sizing
+  */
+}
+
+/* ── Progress bar track ── */
+.preloader-progress {
+  /* TODO: Style the progress bar container
+     - set a fixed width & small height (e.g. 3-4px)
+     - background: rgba(255,255,255,0.08) for subtle track
+     - border-radius, overflow: hidden
+  */
+}
+
+/* ── Progress bar fill ── */
+.preloader-progress-fill {
+  /* TODO: Style the fill bar
+     - height: 100%, width starts at 0% (GSAP will animate this)
+     - background: try a gradient → linear-gradient(90deg, #12229C, #FBA559)
+     - Optional: add a glowing dot with ::after pseudo-element
+  */
+}
+
+/* ── Brand text ── */
+.preloader-brand {
+  /* TODO: Style your brand/logo text
+     - color: #FFFFFF
+     - letter-spacing, text-transform as you like
+  */
+}
+
+/* ── Individual characters (for stagger animation) ── */
+.preloader-brand .char {
+  /* TODO: Each character as inline-block for GSAP stagger
+     - display: inline-block
+     - Set initial hidden state: opacity: 0, transform: translateY(100%)
+     - GSAP will animate these in
+  */
+}
+
+/* ── EXIT ANIMATION ──
+   TIP: For the preloader exit, you can use:
+   - clipPath: 'inset(0 0 100% 0)' → slides up to reveal content
+   - opacity: 0 + scale → fades and shrinks away
+   - y: '-100vh' → slides the whole preloader off screen
+   Pick whichever feels best to you!
+*/

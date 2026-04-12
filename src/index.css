@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+:root {
+  /* ── Core Palette ── */
+  --bg-primary:       #050A30;
+  --bg-secondary:     #12229C;
+  --accent:           #FBA559;
+  --text-primary:     #FFFFFF;
+  --text-secondary:   rgba(255, 255, 255, 0.75);
+  --text-muted:       rgba(255, 255, 255, 0.5);
+
+  /* ── Borders ── */
+  --border:           rgba(255, 255, 255, 0.1);
+
+  /* ── Typography ── */
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  font-family: var(--sans);
+  color: var(--text-primary);
+  background: wheat;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: wheat;
+  height: 100vh;
+  width: 100vw;
+}
