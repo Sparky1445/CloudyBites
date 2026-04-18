@@ -1,5 +1,5 @@
 /* =============================================
-   PRELOADER STYLES — SKELETON
+   PRELOADER STYLES
    Colors:
      Background:  #050A30 (Dark Navy)
      Accent:      #12229C (Royal Blue)
@@ -12,61 +12,197 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  
+
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 24px;
 
-  /* TODO: Add flex-direction, overflow, etc. as needed */
+  background: #050A30;
+  overflow: hidden;
 }
 
-/* ── Counter (the 0→100 number) ── */
-.preloader-counter {
-  /* TODO: Style your counter text
-     - font-size, font-weight, color: #FFFFFF
-     - consider using clamp() for responsive sizing
-  */
+/* ── Decorative blobs ── */
+.preloader-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* ── Progress bar track ── */
-.preloader-progress {
-  /* TODO: Style the progress bar container
-     - set a fixed width & small height (e.g. 3-4px)
-     - background: rgba(255,255,255,0.08) for subtle track
-     - border-radius, overflow: hidden
-  */
+.preloader-blob--1 {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, #12229C 0%, transparent 70%);
+  top: -80px;
+  left: -60px;
 }
 
-/* ── Progress bar fill ── */
-.preloader-progress-fill {
-  /* TODO: Style the fill bar
-     - height: 100%, width starts at 0% (GSAP will animate this)
-     - background: try a gradient → linear-gradient(90deg, #12229C, #FBA559)
-     - Optional: add a glowing dot with ::after pseudo-element
-  */
+.preloader-blob--2 {
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, #FBA559 0%, transparent 70%);
+  bottom: -60px;
+  right: -40px;
+}
+
+.preloader-blob--3 {
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(251, 165, 89, 0.4) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ── Corner accents ── */
+.preloader-corner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.preloader-corner--tl {
+  top: 24px;
+  left: 24px;
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
+  border-left: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.preloader-corner--tr {
+  top: 24px;
+  right: 24px;
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
+  border-right: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.preloader-corner--bl {
+  bottom: 24px;
+  left: 24px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  border-left: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.preloader-corner--br {
+  bottom: 24px;
+  right: 24px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  border-right: 2px solid rgba(255, 255, 255, 0.15);
 }
 
 /* ── Brand text ── */
 .preloader-brand {
-  /* TODO: Style your brand/logo text
-     - color: #FFFFFF
-     - letter-spacing, text-transform as you like
-  */
+  color: #FFFFFF;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
 }
 
 /* ── Individual characters (for stagger animation) ── */
 .preloader-brand .char {
-  /* TODO: Each character as inline-block for GSAP stagger
-     - display: inline-block
-     - Set initial hidden state: opacity: 0, transform: translateY(100%)
-     - GSAP will animate these in
-  */
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(100%);
 }
 
-/* ── EXIT ANIMATION ──
-   TIP: For the preloader exit, you can use:
-   - clipPath: 'inset(0 0 100% 0)' → slides up to reveal content
-   - opacity: 0 + scale → fades and shrinks away
-   - y: '-100vh' → slides the whole preloader off screen
-   Pick whichever feels best to you!
-*/
+/* ── Counter (the 0→100 number) ── */
+.preloader-counter {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+}
+
+/* Percentage sign — smaller and lighter */
+.preloader-counter-percent {
+  font-size: 0.45em;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 4px;
+  vertical-align: super;
+}
+
+/* ── Progress bar track ── */
+.preloader-progress {
+  width: min(320px, 60vw);
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 100px;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+}
+
+/* ── Progress bar fill ── */
+.preloader-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #12229C, #FBA559);
+  border-radius: 100px;
+  position: relative;
+}
+
+/* Glowing dot at the leading edge */
+.preloader-progress-fill::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #FBA559;
+  border-radius: 50%;
+  box-shadow: 0 0 12px 4px rgba(251, 165, 89, 0.5);
+}
+
+/* ── Tagline ── */
+.preloader-tagline {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(0.65rem, 1.2vw, 0.85rem);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+}
+
+/* ══════════════════════════════════════════════
+   CURTAIN EXIT — FrenchWebsite-inspired
+   ══════════════════════════════════════════════ */
+.preloader-curtains {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.preloader-curtain {
+  height: 0%;
+  background: #050A30;
+  flex-shrink: 0;
+}
+
+/* Vary the widths like FrenchWebsite (sum = 100%) */
+.preloader-curtain:nth-child(1) { flex-basis: 15%; }
+.preloader-curtain:nth-child(2) { flex-basis: 15%; }
+.preloader-curtain:nth-child(3) { flex-basis: 30%; }
+.preloader-curtain:nth-child(4) { flex-basis: 20%; }
+.preloader-curtain:nth-child(5) { flex-basis: 20%; }

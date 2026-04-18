@@ -18,7 +18,7 @@ const DotGrid = () => {
     quickToFns.current = dotRefs.current.map((dot) => {
       if (!dot) return null;
       return {
-        x: gsap.quickTo(dot, "x", { duration: 0.4, ease: "power2.out" }),
+        x: gsap.quickTo(dot, "x", { duration: 0.05, ease: "power2.out" }),
         y: gsap.quickTo(dot, "y", { duration: 0.4, ease: "power2.out" }),
         scale: gsap.quickTo(dot, "scale", { duration: 0.4, ease: "power2.out" }),
       };
@@ -124,13 +124,13 @@ const DotGrid = () => {
         gridTemplateRows: `repeat(${rows}, ${dotSpacing}px)`,
         backgroundColor: "transparent",
       }}
-      className="top-0 left-0 fixed w-[100vw] h-[100vh] z-[9999] place-items-center grid pointer-events-none"
+      className="top-0 left-0 fixed w-[100vw] h-[100vh] z-[1] place-items-center grid pointer-events-none"
       ref={gridRef}
     >
       {[...Array(totalDots)].map((_, i) => (
         <div
           key={i}
-          className="w-[4px] h-[4px] bg-[black] rounded-full"
+          className="w-[4px] h-[4px] bg-[brown] rounded-full"
           ref={(el) => (dotRefs.current[i] = el)}
         />
       ))}

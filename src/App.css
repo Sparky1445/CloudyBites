@@ -1,1 +1,7 @@
 /* TODO: Add your website styles here */
+@font-face {
+    font-family: 'NeuMachina';
+    src: url('./assets/neuemachina-regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
