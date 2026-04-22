@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import cloudyBitesVideo from '../../assets/cloudyBites.mp4'
 
-const LandingPage = () => {
+const HeroSection = () =>{
   const Array = ["Rain Soaked", "Farm Fresh", "Unapologetically Delicious"];
   const pathRef = useRef(null);
   const stringRef = useRef(null);
@@ -47,9 +48,19 @@ const LandingPage = () => {
   }, []);
 
   return (
+    <>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className='absolute top-0 left-0 w-[100vw] h-[100vh] object-cover z-[0]'
+      >
+        <source src={cloudyBitesVideo} type="video/mp4" />
+      </video>
 
-    <div className='absolute  top-[100px] left-[7%] w-[85%] bg-[transparent] z-[1]'>
-      <div className='text-[100px] text-blue-900 mt-[10px] flex flex-col text-center font-bold leading-none'>
+      <div className='HeroSection absolute  top-[95px] left-[7%] w-[85%] bg-[transparent] z-[1]'>
+        <section className='Section1 text-[100px] text-[#fff] mt-[10px] flex flex-col text-center font-bold leading-none'>
         {Array.map((item, index) => (
           <React.Fragment key={index}>
             <span className='font-[NeuMachina] tracking-wider'>{item}</span>
@@ -59,7 +70,7 @@ const LandingPage = () => {
               <div
                 ref={stringRef}
                 className="absolute left-0 right-0 cursor-pointer z-[2]"
-                style={{ height: "100px", marginTop: "350px" }}
+                style={{ height: "80px", marginTop: "350px" }}
               >
                 <svg width="100%" height="150px" preserveAspectRatio="none" viewBox="0 0 1200 100">
                   <path
@@ -67,18 +78,21 @@ const LandingPage = () => {
                     d={initialPath}
                     strokeWidth="2"
                     fill="transparent"
-                    stroke="#1e3a8a"
+                    stroke="beige"
                   />
                 </svg>
               </div>
             )}
           </React.Fragment>
         ))}
-      </div>
+      </section>
+
+    
       
 
     </div>
+    </>
   )
 }
 
-export default LandingPage
+export default HeroSection

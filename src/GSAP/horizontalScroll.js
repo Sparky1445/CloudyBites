@@ -23,13 +23,12 @@ export function getMenuHoverAnimationTimeline(){
         menuItemHoverAnimationTimelines = gsap.timeline({paused:true});
              menuItemHoverAnimationTimelines.addLabel('menuItemHoverAnimationTimelineStart')
             .from(`#menuAnimationBox`,{
-                duration:6,
+                duration:4,
                 xPercent:-50,
                 delay:0,
                 ease:"none",
                 repeat:-1,
-                visibility:"visible",
-                yoyo:true,
+                yoyo:true
             })
     }
     return menuItemHoverAnimationTimelines;
@@ -40,3 +39,24 @@ export const menuHoverAnimationPause = () => {
         menuItemHoverAnimationTimelines.pause();
     }
 }
+
+export const rotatorAnimation = (count) => {
+    
+    gsap.to(".MenuStagger",{
+        duration:0.8,
+        rotate: count * 5,
+        transformOrigin: "center center",
+        ease:"bounce.out",
+    })
+    
+}
+
+export const setZeroRotation = () => {
+    gsap.to(".MenuStagger",{
+        duration:0.8,
+        rotate: 0,
+        transformOrigin: "center center",
+        ease:"power1.inOut",
+    })
+}
+

@@ -2,10 +2,12 @@ import { useState } from 'react'
 import Preloader from './components/preLoader/Preloader'
 import './App.css'
 import Cursor from './components/cursor/cursor.jsx'
-import LandingPage from './components/landingPage/LandingPage.jsx'
+import HeroSection from './components/landingPage/LandingPage.jsx'
 import DotGrid from './components/gridMask/gridMask.jsx'
 import Navbar from './components/Navbar/navbar.jsx'
 import HorizontalScroll from './components/infiniteScroll/horizontalScroll.jsx'
+import Menu from './components/Menu/Menu.jsx'
+import AboutUs from './components/aboutUs/AboutUs.jsx'
 
 function App() {
   // Controls whether the preloader is visible
@@ -27,8 +29,10 @@ function App() {
         <Navbar />
         <Cursor />
         <DotGrid />
-        <LandingPage />
+        <HeroSection />
         <HorizontalScroll />
+        <Menu />
+        <AboutUs />
       </main>
     </>
   )

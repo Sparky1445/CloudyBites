@@ -29,8 +29,9 @@
 
 body {
   background: wheat;
-  height: 100vh;
+  min-height: 200vh;
   width: 100vw;
+  overflow-x: hidden;
 }
 
 /* ── Navbar Keyframes ── */
