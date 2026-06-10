@@ -44,7 +44,7 @@ const contactInfo = [
   {
     icon: <PhoneIcon />,
     label: 'Call / WhatsApp',
-    value: '+91 XXXXX XXXXX',
+    value: '+91 8847611540',
   },
 ];
 
