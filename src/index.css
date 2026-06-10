@@ -1,13 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
+
 :root {
-  /* ── Core Palette ── */
-  --bg-primary:       #050A30;
-  --bg-secondary:     #12229C;
-  --accent:           #FBA559;
+  /* ── Core Palette (Blue-dominant, from Cloudy Bites menus) ── */
+  --bg-primary:       #0B1D3A;
+  --bg-secondary:     #5B9BD5;
+  --bg-light:         #EBF5FB;
+  --accent:           #F5A623;
+  --accent-light:     #E8B84D;
+  --sky-light:        #A8D8EA;
+  --sky-blue:         #5B9BD5;
+  --sky-mid:          #2E75B6;
+  --teal:             #3498DB;
+  --cream:            #FFF8F0;
   --text-primary:     #FFFFFF;
-  --text-secondary:   rgba(255, 255, 255, 0.75);
+  --text-secondary:   rgba(255, 255, 255, 0.78);
   --text-muted:       rgba(255, 255, 255, 0.5);
+  --text-dark:        #2C3E50;
 
   /* ── Borders ── */
   --border:           rgba(255, 255, 255, 0.1);
@@ -17,7 +28,7 @@
 
   font-family: var(--sans);
   color: var(--text-primary);
-  background: wheat;
+  background: var(--bg-light);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -28,8 +39,9 @@
 }
 
 body {
-  background: wheat;
-  min-height: 200vh;
+  background: var(--bg-primary);
+  /* Matches exactly: ContactUs top (3680px + 200vh) + ContactUs min-height (100vh) */
+  min-height: calc(3680px + 300vh);
   width: 100vw;
   overflow-x: hidden;
 }
@@ -41,6 +53,126 @@ body {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(52, 211, 153, 0.6); }
-  50% { opacity: 0.5; box-shadow: 0 0 12px rgba(52, 211, 153, 0.9); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(91, 155, 213, 0.6); }
+  50% { opacity: 0.5; box-shadow: 0 0 12px rgba(91, 155, 213, 0.9); }
 }
+
+
+
+/* ── Responsive ── */
+
+/* Hide dot grid on mobile — too many DOM nodes, no mouse to interact with */
+@media (max-width: 767px) {
+  .gridMask { display: none; }
+
+  /* Navbar min-width tighter on small phones */
+  .navbar { min-width: 320px !important; }
+
+  /* Horizontal scroll banner: shorter height so it doesn't swallow the hero */
+  .MenuStagger { height: 60px !important; }
+
+  /* Hide scrollbar on swipeable menu row */
+  .Menu div::-webkit-scrollbar { display: none; }
+}
+
+/* Tablet (768px – 1023px): moderate scale-down */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .navbar { min-width: 600px !important; }
+}
+
+/* ─────────────── */
+
+/* ── Mobile layout reset (≤767px) ──────────────────────────────────
+   The desktop layout uses absolute positioning with hardcoded px offsets
+   (top: 3680px etc.) that rely on GSAP scroll-pins.
+   On mobile we disable the pins and let sections stack naturally.
+───────────────────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  /* The body's desktop min-height (3680px + 300vh) exists purely to
+     accommodate absolutely-positioned sections. On mobile those sections
+     are in normal flow, so the body must shrink to content height. */
+  body {
+    min-height: unset !important;
+  }
+
+  main {
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+  }
+
+  /* Hero */
+  .landingPageWrapper {
+    position: relative !important;
+    top: 0 !important;
+    height: 100svh !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Hide the scrolling marquee strip */
+  .MenuStagger {
+    display: none !important;
+  }
+
+  /* Menu */
+  .Menu {
+    position: relative !important;
+    top: 0 !important;
+    height: auto !important;
+  }
+
+  /* About Us */
+  .AboutUs {
+    position: relative !important;
+    top: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* Reviews */
+  .Reviews {
+    position: relative !important;
+    top: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* Contact Us */
+  .ContactUs {
+    position: relative !important;
+    top: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* Kill any GSAP pin-spacer divs that leak extra scroll height */
+  .pin-spacer {
+    display: contents !important;
+    height: auto !important;
+    padding: 0 !important;
+  }
+
+  /* Hide mouse cursor on touch devices */
+  .cursor {
+    display: none !important;
+  }
+}
+
+/* ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: black;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(255, 255, 255, 0.3);
+} */

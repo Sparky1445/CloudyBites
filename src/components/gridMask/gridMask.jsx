@@ -1,143 +1,161 @@
 import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
 
-const DotGrid = () => {
-  const gridRef = useRef(null);
-  const dotRefs = useRef([]);
-  const quickToFns = useRef([]);
-  const activeDots = useRef(new Set()); // Track which dots are currently displaced
+const DOT_SPACING = 30;
+const DOT_RADIUS = 2;
+const INTERACTION_RADIUS = 100;
+const MAX_DISPLACE = 20;
+const LERP = 0.15;
 
-  const dotSpacing = 30;
-  const rows = Math.floor(window.innerHeight / dotSpacing);
-  const cols = Math.floor(window.innerWidth / dotSpacing);
-  const totalDots = rows * cols;
-  const radius = 100;
+const DotGrid = ({ dotColor = "rgba(200, 135, 42, 0.5)", zIndex = 5 }) => {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    // ── STEP 1: Create quickTo functions ONCE ──
-    quickToFns.current = dotRefs.current.map((dot) => {
-      if (!dot) return null;
-      return {
-        x: gsap.quickTo(dot, "x", { duration: 0.05, ease: "power2.out" }),
-        y: gsap.quickTo(dot, "y", { duration: 0.4, ease: "power2.out" }),
-        scaleX: gsap.quickTo(dot, "scaleX", { duration: 0.4, ease: "power2.out" }),
-        scaleY: gsap.quickTo(dot, "scaleY", {duration:0.4, ease:"power2.out"})
-      };
-    });
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
 
-    // ── STEP 2: Add will-change to the grid container for GPU compositing ──
-    if (gridRef.current) {
-      gridRef.current.style.willChange = "transform";
-    }
+    // Size canvas to parent element
+    const parent = canvas.parentElement;
+    canvas.width = parent.offsetWidth;
+    canvas.height = parent.offsetHeight;
 
-    // ── STEP 3: Grid-based spatial lookup ──
-    // Since dots are in a perfect grid, we KNOW every dot's position:
-    //   dot at index (row, col) is at pixel position (col * spacing, row * spacing)
-    // So instead of checking all 500+ dots, we calculate which rows/cols
-    // fall within the mouse radius — typically only ~20 dots!
+    const COLS = Math.floor(canvas.width / DOT_SPACING);
+    const ROWS = Math.floor(canvas.height / DOT_SPACING);
+    const COUNT = COLS * ROWS;
+
+    // Typed arrays: no object allocation per dot
+    const dx = new Float32Array(COUNT);
+    const dy = new Float32Array(COUNT);
+    const tx = new Float32Array(COUNT);
+    const ty = new Float32Array(COUNT);
+
     let rafId = null;
-    let lastMouseX = 0;
-    let lastMouseY = 0;
+    let mouseX = -9999;
+    let mouseY = -9999;
 
-    const updateDots = () => {
-      rafId = null;
-      const mouseX = lastMouseX;
-      const mouseY = lastMouseY;
+    const drawVisible = () => {
+      const rect = canvas.getBoundingClientRect();
+      // Canvas-local Y of the visible strip
+      const stripTop = Math.max(0, -rect.top - DOT_SPACING);
+      const stripH = window.innerHeight + DOT_SPACING * 2;
 
-      // Get grid's position on screen (only the container, not every dot)
-      const gridRect = gridRef.current?.getBoundingClientRect();
-      if (!gridRect) return;
+      ctx.clearRect(0, stripTop, canvas.width, stripH);
+      ctx.fillStyle = dotColor;
 
-      // Calculate which grid cells are within the radius
-      const minCol = Math.max(0, Math.floor((mouseX - gridRect.left - radius) / dotSpacing));
-      const maxCol = Math.min(cols - 1, Math.ceil((mouseX - gridRect.left + radius) / dotSpacing));
-      const minRow = Math.max(0, Math.floor((mouseY - gridRect.top - radius) / dotSpacing));
-      const maxRow = Math.min(rows - 1, Math.ceil((mouseY - gridRect.top + radius) / dotSpacing));
+      const minRow = Math.max(0, Math.floor(stripTop / DOT_SPACING));
+      const maxRow = Math.min(ROWS - 1, Math.ceil((stripTop + stripH) / DOT_SPACING));
 
-      // Track dots that need to reset (were active before, not active now)
-      const newActiveDots = new Set();
+      for (let r = minRow; r <= maxRow; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const i = r * COLS + c;
+          ctx.beginPath();
+          ctx.arc(
+            c * DOT_SPACING + DOT_SPACING / 2 + dx[i],
+            r * DOT_SPACING + DOT_SPACING / 2 + dy[i],
+            DOT_RADIUS,
+            0,
+            Math.PI * 2
+          );
+          ctx.fill();
+        }
+      }
+    };
 
-      // Only loop through nearby dots (typically ~20 instead of 500+)
-      for (let row = minRow; row <= maxRow; row++) {
-        for (let col = minCol; col <= maxCol; col++) {
-          const i = row * cols + col;
-          const fns = quickToFns.current[i];
-          if (!fns) continue;
+    const updateTargets = () => {
+      const rect = canvas.getBoundingClientRect();
+      const cmx = mouseX - rect.left; // mouse in canvas space
+      const cmy = mouseY - rect.top;
 
-          // Dot's center position on screen
-          const dotX = gridRect.left + col * dotSpacing + dotSpacing / 2;
-          const dotY = gridRect.top + row * dotSpacing + dotSpacing / 2;
+      tx.fill(0);
+      ty.fill(0);
 
-          const distX = mouseX - dotX;
-          const distY = mouseY - dotY;
-          const distance = Math.sqrt(distX * distX + distY * distY);
+      if (cmx < -INTERACTION_RADIUS || cmy < -INTERACTION_RADIUS ||
+          cmx > canvas.width + INTERACTION_RADIUS || cmy > canvas.height + INTERACTION_RADIUS) return;
 
-          if (distance < radius) {
+      const minC = Math.max(0, Math.floor((cmx - INTERACTION_RADIUS) / DOT_SPACING));
+      const maxC = Math.min(COLS - 1, Math.ceil((cmx + INTERACTION_RADIUS) / DOT_SPACING));
+      const minR = Math.max(0, Math.floor((cmy - INTERACTION_RADIUS) / DOT_SPACING));
+      const maxR = Math.min(ROWS - 1, Math.ceil((cmy + INTERACTION_RADIUS) / DOT_SPACING));
+
+      for (let r = minR; r <= maxR; r++) {
+        for (let c = minC; c <= maxC; c++) {
+          const i = r * COLS + c;
+          const dotX = c * DOT_SPACING + DOT_SPACING / 2;
+          const dotY = r * DOT_SPACING + DOT_SPACING / 2;
+          const distX = cmx - dotX;
+          const distY = cmy - dotY;
+          const dist = Math.hypot(distX, distY);
+
+          if (dist < INTERACTION_RADIUS && dist > 0) {
+            const force = (INTERACTION_RADIUS - dist) / INTERACTION_RADIUS;
             const angle = Math.atan2(distY, distX);
-            const force = (radius - distance) / radius;
-
-            fns.x(Math.cos(angle) * force * -20);
-            fns.y(Math.sin(angle) * force * -20);
-            fns.scaleX(1.5);
-            fns.scaleY(1.5);
-            newActiveDots.add(i);
+            tx[i] = Math.cos(angle) * force * -MAX_DISPLACE;
+            ty[i] = Math.sin(angle) * force * -MAX_DISPLACE;
           }
         }
       }
-
-      // Reset dots that were active before but aren't anymore
-      for (const i of activeDots.current) {
-        if (!newActiveDots.has(i)) {
-          const fns = quickToFns.current[i];
-          if (fns) {
-            fns.x(0);
-            fns.y(0);
-            fns.scaleX(1);
-            fns.scaleY(1);
-          }
-        }
-      }
-
-      activeDots.current = newActiveDots;
     };
 
-    // ── STEP 4: Throttle with requestAnimationFrame ──
-    // Mouse events fire 60-100+ times/sec, but screen only refreshes 60fps
-    // So we batch: store the mouse position, process once per frame
+    const animate = () => {
+      let moving = false;
+
+      for (let i = 0; i < COUNT; i++) {
+        const ex = tx[i] - dx[i];
+        const ey = ty[i] - dy[i];
+        if (Math.abs(ex) > 0.01 || Math.abs(ey) > 0.01) {
+          dx[i] += ex * LERP;
+          dy[i] += ey * LERP;
+          moving = true;
+        } else {
+          dx[i] = tx[i];
+          dy[i] = ty[i];
+        }
+      }
+
+      drawVisible();
+
+      if (moving) {
+        rafId = requestAnimationFrame(animate);
+      } else {
+        rafId = null;
+      }
+    };
+
     const handleMouseMove = (e) => {
-      lastMouseX = e.clientX;
-      lastMouseY = e.clientY;
-
-      if (!rafId) {
-        rafId = requestAnimationFrame(updateDots);
-      }
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      updateTargets();
+      if (!rafId) rafId = requestAnimationFrame(animate);
     };
+
+    const handleScroll = () => {
+      if (!rafId) drawVisible();
+    };
+
+    drawVisible();
 
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [dotColor]);
 
   return (
-    <div
+    <canvas
+      ref={canvasRef}
       style={{
-        gridTemplateColumns: `repeat(${cols}, ${dotSpacing}px)`,
-        gridTemplateRows: `repeat(${rows}, ${dotSpacing}px)`,
-        backgroundColor: "transparent",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        zIndex,
+        pointerEvents: "none",
       }}
-      className="top-[3430px] left-0 absolute w-[100vw] h-[100vh] z-[1] place-items-center grid pointer-events-none"
-      ref={gridRef}
-    >
-      {[...Array(totalDots)].map((_, i) => (
-        <div
-          key={i}
-          className="w-[4px] h-[4px] bg-[beige] rounded-full"
-          ref={(el) => (dotRefs.current[i] = el)}
-        />
-      ))}
-    </div>
+    />
   );
 };
 

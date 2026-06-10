@@ -1,208 +1,129 @@
-/* =============================================
-   PRELOADER STYLES
-   Colors:
-     Background:  #050A30 (Dark Navy)
-     Accent:      #12229C (Royal Blue)
-     CTA/Glow:    #FBA559 (Amber)
-     Text:        #FFFFFF (White)
-   ============================================= */
+/* ─────────────────────────────────────────────────────
+   PRELOADER
+   Flow: curtains in → image + counter → curtains out
+   Palette: sky #C8DCF0  |  navy #0B1D3A  |  light #EBF5FB
+   ───────────────────────────────────────────────────── */
 
-/* ── Fullscreen overlay ── */
-.preloader {
+@font-face {
+  font-family: 'NeueMachina';
+  src: url('../../assets/neuemachina-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NeueMachina';
+  src: url('../../assets/neuemachina-light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NeueMachina';
+  src: url('../../assets/neuemachina-ultrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+/* ── Wrapper ── */
+.pl {
   position: fixed;
   inset: 0;
   z-index: 9999;
-
+  background: #0B1D3A; /* dark navy — sky-blue curtains sweep over it */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-
-  background: #050A30;
+  gap: 16px;
   overflow: hidden;
 }
 
-/* ── Decorative blobs ── */
-.preloader-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.preloader-blob--1 {
-  width: 320px;
-  height: 320px;
-  background: radial-gradient(circle, #12229C 0%, transparent 70%);
-  top: -80px;
-  left: -60px;
-}
-
-.preloader-blob--2 {
-  width: 260px;
-  height: 260px;
-  background: radial-gradient(circle, #FBA559 0%, transparent 70%);
-  bottom: -60px;
-  right: -40px;
-}
-
-.preloader-blob--3 {
-  width: 180px;
-  height: 180px;
-  background: radial-gradient(circle, rgba(251, 165, 89, 0.4) 0%, transparent 70%);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* ── Corner accents ── */
-.preloader-corner {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.preloader-corner--tl {
-  top: 24px;
-  left: 24px;
-  border-top: 2px solid rgba(255, 255, 255, 0.15);
-  border-left: 2px solid rgba(255, 255, 255, 0.15);
-}
-
-.preloader-corner--tr {
-  top: 24px;
-  right: 24px;
-  border-top: 2px solid rgba(255, 255, 255, 0.15);
-  border-right: 2px solid rgba(255, 255, 255, 0.15);
-}
-
-.preloader-corner--bl {
-  bottom: 24px;
-  left: 24px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
-  border-left: 2px solid rgba(255, 255, 255, 0.15);
-}
-
-.preloader-corner--br {
-  bottom: 24px;
-  right: 24px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
-  border-right: 2px solid rgba(255, 255, 255, 0.15);
-}
-
-/* ── Brand text ── */
-.preloader-brand {
-  color: #FFFFFF;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+/* ── Illustration — floats ABOVE the curtains ── */
+.pl__image {
+  width: min(680px, 100vw);
+  height: auto;
+  object-fit: contain;
   position: relative;
-  z-index: 2;
+  z-index: 20;
+  user-select: none;
+  pointer-events: none;
+  border-radius: 6px;
 }
 
-/* ── Individual characters (for stagger animation) ── */
-.preloader-brand .char {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(100%);
-}
-
-/* ── Counter (the 0→100 number) ── */
-.preloader-counter {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: clamp(3.5rem, 8vw, 7rem);
-  font-weight: 800;
-  color: #FFFFFF;
+/* ── Counter ── */
+.pl__counter {
+  display: flex;
+  align-items: baseline;
+  position: relative;
+  z-index: 20;
+  font-family: 'NeueMachina', system-ui, sans-serif;
+  font-style: normal;
+  color: #0B1D3A;
   line-height: 1;
-  position: relative;
-  z-index: 2;
-  opacity: 0;
 }
 
-/* Percentage sign — smaller and lighter */
-.preloader-counter-percent {
-  font-size: 0.45em;
+.pl__counter-num {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.4);
-  margin-left: 4px;
-  vertical-align: super;
+  letter-spacing: 0.02em;
+  min-width: 2.4ch;
+  text-align: right;
+  display: inline-block;
 }
 
-/* ── Progress bar track ── */
-.preloader-progress {
-  width: min(320px, 60vw);
-  height: 3px;
-  background: rgba(255, 255, 255, 0.08);
+.pl__counter-pct {
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  font-weight: 300;
+  opacity: 0.5;
+  margin-left: 2px;
+}
+
+/* ── Progress bar ── */
+.pl__progress {
+  width: min(420px, 72vw);
+  height: 6px;
+  background: rgba(11, 29, 58, 0.15);
   border-radius: 100px;
   overflow: hidden;
   position: relative;
-  z-index: 2;
-  opacity: 0;
+  z-index: 20;
 }
 
-/* ── Progress bar fill ── */
-.preloader-progress-fill {
+.pl__progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #12229C, #FBA559);
+  background: #0B1D3A;
   border-radius: 100px;
   position: relative;
 }
 
-/* Glowing dot at the leading edge */
-.preloader-progress-fill::after {
+.pl__progress-fill::after {
   content: '';
   position: absolute;
   right: -3px;
   top: 50%;
   transform: translateY(-50%);
-  width: 8px;
-  height: 8px;
-  background: #FBA559;
+  width: 6px;
+  height: 6px;
+  background: #0B1D3A;
   border-radius: 50%;
-  box-shadow: 0 0 12px 4px rgba(251, 165, 89, 0.5);
+  box-shadow: 0 0 8px 3px rgba(11, 29, 58, 0.35);
 }
 
-/* ── Tagline ── */
-.preloader-tagline {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: clamp(0.65rem, 1.2vw, 0.85rem);
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.35);
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  position: relative;
-  z-index: 2;
-  opacity: 0;
-}
-
-/* ══════════════════════════════════════════════
-   CURTAIN EXIT — FrenchWebsite-inspired
-   ══════════════════════════════════════════════ */
-.preloader-curtains {
+/* ── Curtains — z-index BELOW image/counter ── */
+.pl__curtains {
   position: absolute;
   inset: 0;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
+  align-items: flex-start;
   z-index: 10;
   pointer-events: none;
 }
 
-.preloader-curtain {
-  height: 0%;
-  background: #050A30;
-  flex-shrink: 0;
+.pl__curtain {
+  flex: 1;
+  height: 0%;        /* grows to 100% on entry, shrinks back on exit */
+  background: #C8DCF0;
 }
-
-/* Vary the widths like FrenchWebsite (sum = 100%) */
-.preloader-curtain:nth-child(1) { flex-basis: 15%; }
-.preloader-curtain:nth-child(2) { flex-basis: 15%; }
-.preloader-curtain:nth-child(3) { flex-basis: 30%; }
-.preloader-curtain:nth-child(4) { flex-basis: 20%; }
-.preloader-curtain:nth-child(5) { flex-basis: 20%; }

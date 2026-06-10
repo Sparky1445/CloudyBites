@@ -7,12 +7,23 @@ export const handleHover = (e) =>{
         if(!hoverAnimations){
             hoverAnimations = gsap.timeline({paused:true});
             hoverAnimations.to(".hoverMask",{
-            duration:0.175,
+            duration:0.5,
             opacity:1,
             height:"100%",
             delay:0,
-            ease:"power1.inOut",
-        }).addPause();
+            ease:"power1.out",
+        })
+        .to(".horizontalText",{
+            opacity:1,
+            duration:0.2,
+        },"<"
+        )
+        .to(".superText",{
+            opacity:0,
+            duration:0.2,
+        },"<"
+        )   
+        // glass background stays — no override needed
         }
         return hoverAnimations;        
 }
@@ -21,15 +32,14 @@ export const handleHover = (e) =>{
 export function getMenuHoverAnimationTimeline(){
     if(!menuItemHoverAnimationTimelines){
         menuItemHoverAnimationTimelines = gsap.timeline({paused:true});
-             menuItemHoverAnimationTimelines.addLabel('menuItemHoverAnimationTimelineStart')
-            .from(`#menuAnimationBox`,{
-                duration:4,
-                xPercent:-50,
-                delay:0,
-                ease:"none",
-                repeat:-1,
-                yoyo:true
-            })
+        // Animate to -50%: since content is duplicated, at -50% it shows an
+        // identical copy — the snap-back on repeat is invisible (seamless loop).
+        menuItemHoverAnimationTimelines.to(`#menuAnimationBox`,{
+            duration: 18,
+            xPercent: -50,
+            ease: "none",
+            repeat: -1,
+        });
     }
     return menuItemHoverAnimationTimelines;
 }
@@ -43,8 +53,8 @@ export const menuHoverAnimationPause = () => {
 export const rotatorAnimation = (count) => {
     
     gsap.to(".MenuStagger",{
-        duration:0.8,
-        rotate: count * 5,
+        duration:0.5,
+        rotate: count * 3,
         transformOrigin: "center center",
         ease:"bounce.out",
     })
@@ -53,7 +63,7 @@ export const rotatorAnimation = (count) => {
 
 export const setZeroRotation = () => {
     gsap.to(".MenuStagger",{
-        duration:0.8,
+        duration:0.5,
         rotate: 0,
         transformOrigin: "center center",
         ease:"power1.inOut",

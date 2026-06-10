@@ -1,96 +1,143 @@
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-import cloudyBitesVideo from '../../assets/cloudyBites.mp4'
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import cloudyBitesVideo from '../../assets/cloudyBites3.mp4'
+import { WHATSAPP_NUMBER } from '../../config.js'
+
+gsap.registerPlugin(ScrollTrigger);
 
 const HeroSection = () =>{
-  const Array = ["Rain Soaked", "Farm Fresh", "Unapologetically Delicious"];
-  const pathRef = useRef(null);
-  const stringRef = useRef(null);
-
-  const initialPath = "M 10 50 Q 600 50 1190 50";
+  const textArr = ["Great Food", "Wherever You are ", "In Sohra"];
+  const ellipseRef = useRef(null);
 
   useEffect(() => {
-    const path = pathRef.current;
-    const stringEl = stringRef.current;
-    if (!path || !stringEl) return;
 
-    // Set the initial straight line
-    path.setAttribute("d", initialPath);
+    const isTouch = window.innerWidth < 1024;
 
-    const handleMouseMove = (e) => {
-      const rect = stringEl.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const finalPath = `M 10 50 Q ${x} ${y} 1190 50`;
+    if (isTouch) return;
 
-      gsap.to(path, {
-        attr: { d: finalPath },
-        duration: 0.5,
-        ease: "elastic.out(1, 0.1)"
+    // Animate the stroke tracing around the fixed ellipse — desktop only
+    const ellipse = ellipseRef.current;
+    if (ellipse) {
+      const totalLength = ellipse.getTotalLength();
+      gsap.set(ellipse, {
+        strokeDasharray: totalLength,
+        strokeDashoffset: totalLength,
       });
-    };
+      const tl = gsap.timeline({ repeat: -1 });
+      tl.to(ellipse, { strokeDashoffset: 0, duration: 1, ease: "power1.inOut" })
+        .to({}, { duration: 2 })
+        .to(ellipse, { strokeDashoffset: totalLength, duration: 1, ease: "power1.inOut" })
+        .to({}, { duration: 1 });
+    }
 
-    const handleMouseLeave = () => {
-      gsap.to(path, {
-        attr: { d: initialPath },
-        duration: 0.6,
-        ease: "bounce.out"
-      });
-    };
+    // Desktop only: pin hero and fade marquee on scroll
+    gsap.to(".MenuStagger", {
+      opacity: 0,
+      scrollTrigger: {
+        trigger: ".landingPageWrapper",
+        start: "top top",
+        end: "+=80",
+        scrub: 1,
+      }
+    });
 
-    stringEl.addEventListener("mousemove", handleMouseMove);
-    stringEl.addEventListener("mouseleave", handleMouseLeave);
+    const st = ScrollTrigger.create({
+      trigger: ".landingPageWrapper",
+      start: "top top",
+      end: () => "+=" + (window.innerHeight + 2200),
+      pin: true,
+      pinSpacing: false,
+    });
 
     return () => {
-      stringEl.removeEventListener("mousemove", handleMouseMove);
-      stringEl.removeEventListener("mouseleave", handleMouseLeave);
+      st.kill();
     };
   }, []);
 
   return (
     <>
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className='absolute top-0 left-0 w-[100vw] h-[100vh] object-cover z-[0]'
-      >
-        <source src={cloudyBitesVideo} type="video/mp4" />
-      </video>
+      <div className="landingPageWrapper absolute top-0 left-0 w-full h-screen z-[0]">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className='absolute top-0 left-0 w-[100vw] h-[100vh] object-cover z-[0]'
+        >
+          <source src={cloudyBitesVideo} type="video/mp4" />
+        </video>
 
-      <div className='HeroSection absolute  top-[95px] left-[7%] w-[85%] bg-[transparent] z-[1]'>
-        <section className='Section1 text-[100px] text-[#fff] mt-[10px] flex flex-col text-center font-bold leading-none'>
-        {Array.map((item, index) => (
-          <React.Fragment key={index}>
-            <span className='font-[NeuMachina] tracking-wider'>{item}</span>
-            
-            {/* Interactive string after "Farm Fresh" */}
-            {item === "Farm Fresh" && (
-              <div
-                ref={stringRef}
-                className="absolute left-0 right-0 cursor-pointer z-[2]"
-                style={{ height: "80px", marginTop: "350px" }}
-              >
-                <svg width="100%" height="150px" preserveAspectRatio="none" viewBox="0 0 1200 100">
-                  <path
-                    ref={pathRef}
-                    d={initialPath}
-                    strokeWidth="2"
-                    fill="transparent"
-                    stroke="beige"
-                  />
-                </svg>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-      </section>
+        <div className='HeroSection absolute top-[72px] sm:top-[95px] left-[3%] sm:left-[7%] w-[94%] sm:w-[85%] bg-[transparent] z-[1]'>
+          <section className='Section1 text-4xl sm:text-6xl md:text-[76px] text-[#EBF5FB] mt-[10px] flex flex-col text-center font-medium leading-tight drop-shadow-2xl'>
+            {textArr.map((item, index) => (
+              <React.Fragment key={index}>  
+                <span className='font-[serif] text-[#EBF5FB] tracking-wider'>
+                  {item === "In Sohra" ? (
+                    <>
+                      In{" "}
+                      <span
+                        className="sohra-text  text-[#1a6b3a] font-[5px] tracking-wide"
+                        style={{
+                          position: 'relative',
+                          display: 'inline-block',
+                          textShadow: '0 1px 4px rgba(0,0,0,0.2)'
+                        }}
+                      >
+                        Sohra
 
-    
-      
+                        {/* Fixed ellipse with animated stroke trace */}
+                        <svg
+                          viewBox="0 0 360 130"
+                          style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: 'clamp(180px, 55vw, 360px)',
+                            height: 'clamp(65px, 20vw, 130px)',
+                            transform: 'translate(-50%, -50%) rotate(-15deg)',
+                            overflow: 'visible',
+                            pointerEvents: 'none',
+                          }}
+                        >
+                          <ellipse
+                            ref={ellipseRef}
+                            cx="180" cy="70"
+                            rx="185" ry="58"
+                            fill="none"
+                            stroke="#1a6b3a"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </span>
+                    </>
+                  ) : (
+                    item
+                  )}
+                </span>
+              </React.Fragment>
+            ))}
+          </section>
+        </div>
 
-    </div>
+        {/* Mobile-only ORDER NOW CTA — pinned to the bottom of the hero */}
+        <a
+          href={`https://wa.me/${WHATSAPP_NUMBER}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="lg:hidden absolute bottom-10 left-1/2 -translate-x-1/2 z-[2]
+                     w-[78vw] max-w-[340px] text-center
+                     py-5 rounded-2xl no-underline
+                     bg-gradient-to-r from-[#5B9BD5] via-[#3a8fd1] to-[#2E75B6]
+                     text-white text-[18px] font-bold tracking-[0.22em] uppercase
+                     shadow-[0_0_32px_6px_rgba(91,155,213,0.55),0_8px_24px_rgba(0,0,0,0.35)]
+                     border border-white/30
+                     active:scale-95 transition-transform"
+        >
+          Order Now
+        </a>
+      </div>
     </>
   )
 }
