@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import cloudyBitesVideo from '../../assets/cloudyBites3.mp4'
+import cloudyBitesVideo from '../../assets/CloudyBites3.mp4'
 import { WHATSAPP_NUMBER } from '../../config.js'
 
 gsap.registerPlugin(ScrollTrigger);
